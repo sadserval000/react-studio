@@ -1,6 +1,8 @@
 import "./App.css";
 import { useState } from "react";
 import bakeryData from "./assets/bakery-data.json";
+import { BakeryItem } from './components/BakeryItem'
+import { CartItem } from './components/CartItem'
 
 /* ####### DO NOT TOUCH -- this makes the image URLs work ####### */
 bakeryData.forEach((item) => {
@@ -9,20 +11,48 @@ bakeryData.forEach((item) => {
 /* ############################################################## */
 
 function App() {
-  // TODO: use useState to create a state variable to hold the state of the cart
-  /* add your cart state code here */
+  const [cartItems, setCartItems] = useState(Array(bakeryData.length).fill(0))
+
+  const handleClick = (index) => {
+    const newCart = [...cartItems]
+    newCart[index]++
+    setCartItems(newCart)
+  }
 
   return (
     <div className="App">
-      <h1>My Bakery</h1> {/* TODO: personalize your bakery (if you want) */}
-
-      {bakeryData.map((item, index) => ( // TODO: map bakeryData to BakeryItem components
-        <p>Bakery Item {index}</p> // replace with BakeryItem component
-      ))}
-
-      <div>
+      <h1>My Bakery</h1>
+      <div className="content-container">
+        <div className="items-container">
+          {bakeryData.map((item, index) =>
+            <BakeryItem 
+              key={index}
+              index={index}
+              name={item.name}
+              description={item.description}
+              price={item.price}
+              image={item.image}
+              clickFunc={(index) => handleClick(index)}
+            />
+          )}
+        </div>
+      </div>
+      <div className="cart-container">
         <h2>Cart</h2>
-        {/* TODO: render a list of items in the cart */}
+          {cartItems.map((count, index) =>
+            <CartItem 
+              key={index}
+              count={count}
+              name={bakeryData[index].name}
+              price={bakeryData[index].price}
+            />
+          )}
+        <h3 className="total">
+          Total: $
+          {(cartItems.reduce((prev, curr, index) => {
+            return prev + curr * bakeryData[index].price
+          }, 0)).toFixed(2)}
+        </h3>
       </div>
     </div>
   );
